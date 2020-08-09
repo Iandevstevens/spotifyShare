@@ -1,6 +1,6 @@
 let player: any;
 
-export const initSpotify = (setSongPlaying: Function, songPlaying: string) => {
+export default (setPlayer: Function) => {
   const script = document.createElement("script");
   script.src = "https://sdk.scdn.co/spotify-player.js";
   script.async = true;
@@ -8,7 +8,7 @@ export const initSpotify = (setSongPlaying: Function, songPlaying: string) => {
 
   window.onSpotifyWebPlaybackSDKReady = () => {
     const token =
-      "BQBModbBWw5LdhO7kLciQe6n9rVLa1P43vKCI5SpECb6L4ouAMbRKGFXn0Hy-UUFjX4fRL9cVlk3eWOyd0O_5QLceA7yPumEBLF6sEEmVbwzCy6R41HNDmdzgwkdkJfgzJomXQ2xxYqWtKq61JoalNMtp9nJ1IFSNGlDjSsGKIYRdJ5PdPDf6AddsJc";
+      "BQBa4Fru9w_PitfuNek79dVK_tAnj15Jlef1wubMq2LPoQMze_UgnE9jodc_-0iD7y7C2kOoToUE-LU5O53mA-G1NnaWbgCr38zo6S7S_0rq_8USlERIR9RSxJX12EaYyAFSogOVyS7xchdqvas6OLBDn55Rc5skZ88FXGgFjM_kBSiiwFL942vBKxs";
     player = new Spotify.Player({
       name: "Web Playback SDK Quick Start Player",
       getOAuthToken: (cb: any) => {
@@ -30,16 +30,10 @@ export const initSpotify = (setSongPlaying: Function, songPlaying: string) => {
       console.error(message);
     });
 
-    // Playback status updates
-    player.addListener("player_state_changed", (state: any) => {
-      if (songPlaying !== state.track_window.current_track.name) {
-        setSongPlaying(state.track_window.current_track.name);
-      }
-    });
-
     // Ready
     player.addListener("ready", ({ device_id }: any) => {
       console.log("Ready with Device ID", device_id);
+      setPlayer(false);
     });
 
     // Not Ready
@@ -50,6 +44,12 @@ export const initSpotify = (setSongPlaying: Function, songPlaying: string) => {
     // Connect to the player!
     player.connect();
   };
+};
+
+export const getSongPlaying = (checkSongChange: Function) => {
+  player.addListener("player_state_changed", (state: any) => {
+    checkSongChange(state.track_window.current_track.name);
+  });
 };
 
 export const getPlayer = () => {
