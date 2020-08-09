@@ -1,24 +1,52 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import { initSpotify, getPlayer } from "./utils/initSpotify";
+import "./App.css";
 
 function App() {
+  const [songPlaying, setSongPlaying] = useState("nothing playing");
+  useEffect(() => {
+    initSpotify(setSongPlaying, songPlaying);
+  }, []);
+
+  const lowerVolume = () => {
+    const player = getPlayer();
+    player.getVolume().then((volume: number) => {
+      let volume_percentage = volume;
+      console.log(`The volume of the player is ${volume_percentage}%`);
+      if (volume > 0.1) {
+        player.setVolume(volume - 0.1).then(() => {
+          console.log("Volume updated!");
+        });
+      }
+    });
+  };
+
+  const increaseVolume = () => {
+    const player = getPlayer();
+    player.getVolume().then((volume: number) => {
+      let volume_percentage = volume;
+      console.log(`The volume of the player is ${volume_percentage}%`);
+      if (volume < 0.9) {
+        player.setVolume(volume + 0.1).then(() => {
+          console.log("Volume updated!");
+        });
+      }
+    });
+  };
+
+  const mute = () => {
+    const player = getPlayer();
+    player.setVolume(0).then(() => {
+      console.log("Volume updated!");
+    });
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h2>{songPlaying}</h2>
+      <button onClick={lowerVolume}>Lower</button>
+      <button onClick={increaseVolume}>Higher</button>
+      <button onClick={mute}>Mute</button>
     </div>
   );
 }
